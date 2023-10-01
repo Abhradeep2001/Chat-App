@@ -1,23 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { useContext } from 'react';
+import './App.scss';
+import { Home } from './pages/home';
+import { Login } from './pages/login';
+import { Register } from './pages/register';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthContext } from './context/AuthContext';
 
 function App() {
+
+  const {currentUser}=useContext(AuthContext)
+
+  //Creating an additional protected route to check if any current user has logged in or not
+  const ProtectedRoute = ({children}) => {
+    //If there is no current user navigate to '/login' page
+    if(!currentUser){
+      return <Navigate to="/login" />
+    }
+    return children;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     <Router>
+      <Routes>
+        <Route path="/">
+        <Route
+            index
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+        <Route path="register" element={<Register/>}/>
+        <Route path="login" element={<Login/>}/> 
+        </Route>
+      </Routes>
+     </Router>
     </div>
   );
 }
